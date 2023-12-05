@@ -58,14 +58,57 @@ CMD ["npm","run","start"]
 
 ## Step 3: Add Docker Hub Username and Password to Github Secrets
 
-On your github account: Go to your project repository and click on `settings`
+1. On your github account: Go to your project repository and click on `Settings`
+
+![settings-button](./assets/github-settings-button.png)
+
+2. On the left panel under `security` click on **`Secrets and variables`**
+
+![secrets-and-variables](./assets/secrets-n-variables.png)
+
+3. Under `Secrets and variables` click on **`Actions`**
+
+![Actions-button](./assets/actions-button.png)
+
+4. Click on the green `New repository secret` button
+
+![new-secret-button](./assets/new-secret.png)
+
+5. On the `Name` field enter **`DOCKER_USERNAME`**
+  - On the `Secret` field enter your docker hub username
+  - Then click on the green `Add secret` button
+
+![secret-form](./assets/secret-form.png)
+
+6. Repeat step 4 and 5 but this time
+  - On the `Name` field enter **`DOCKER_PASSWORD`**
+  - On the `Secret` field enter your docker hub password
+  - Then click on the green `Add secret` button
+
+## Step 4: Create an EC2 Instance - Use ubuntu image - Install docker
+
+Click this []() link and follow the steps to create an Ubuntu EC2 instance
+
+Click this [Install-docker](./journal/install-docker-on-ec2.md) link and follow the steps to install Docker on your EC2 instance
 
 
+## Step 5: Create a Self Hosted Runner
 
+## Step 6: Write CICD Pipeline
+If you get this error
+```bash
+permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/images/create?fromImage=pearlicia%2Fnodejs-app-cicd-docker-ec2&tag=latest": dial unix /var/run/docker.sock: connect: permission denied
+Error: Process completed with exit code 1.
+```
 
-
-
-
+Run
+```bash
+sudo su
+```
+Then
+```bash
+chmod 777 /var/run/docker.sock
+```
 
 
 ## Workflow Overview:
