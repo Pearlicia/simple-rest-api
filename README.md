@@ -93,8 +93,34 @@ Click this [Install-docker](./journal/install-docker-on-ec2.md) link and follow 
 
 
 ## Step 5: Create a Self Hosted Runner
+### Setting up Self-Hosted Runner on EC2:
+
+Configure a self-hosted runner on AWS EC2 to enable GitHub Actions to run on your instance. The runner will facilitate tasks like pulling the Docker image and running the container.
+ 
+Go to Github repo settings
+- On `Code and automation` tab expand `Actions` and click on `Runners`
+- Click on `new self hosted runner` button
+- On `Runner image` select `Linux`
+- On `Architecture` select `x64`
+- Copy the `Download` and `Configure` code step by step and run on the EC2 instance
 
 ## Step 6: Write CICD Pipeline
+
+### Workflow Overview:
+
+#### Build Job:
+
+1. **Checkout Source:** Fetch the source code.
+2. **Login to Docker Hub:** Authenticate Docker login using GitHub Secrets for Docker username and password.
+3. **Build Docker Image:** Build the Docker image for the Node.js application.
+4. **Publish Image to Docker Hub:** Push the Docker image to Docker Hub for later use in deployment.
+
+#### Deploy Job:
+
+1. **Pull Image from Docker Hub:** Pull the Docker image from Docker Hub on the EC2 instance.
+2. **Delete Old Container:** Remove any existing Docker container to avoid conflicts.
+3. **Run Docker Container:** Start the Docker container on the EC2 instance.
+
 If you get this error
 ```bash
 permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/images/create?fromImage=pearlicia%2Fnodejs-app-cicd-docker-ec2&tag=latest": dial unix /var/run/docker.sock: connect: permission denied
@@ -110,28 +136,6 @@ Then
 chmod 777 /var/run/docker.sock
 ```
 
-
-## Workflow Overview:
-
-In this guide, we will leverage GitHub Actions and Docker to write a CI/CD workflow. We'll deploy a Node.js application, containerize it, and publish it to EC2. The workflow consists of two jobs: "Build" and "Deploy."
-
-### Build Job:
-
-1. **Checkout Source:** Fetch the source code.
-2. **Login to Docker Hub:** Authenticate Docker login using GitHub Secrets for Docker username and password.
-3. **Build Docker Image:** Build the Docker image for the Node.js application.
-4. **Publish Image to Docker Hub:** Push the Docker image to Docker Hub for later use in deployment.
-
-### Deploy Job:
-
-1. **Pull Image from Docker Hub:** Pull the Docker image from Docker Hub on the EC2 instance.
-2. **Delete Old Container:** Remove any existing Docker container to avoid conflicts.
-3. **Run Docker Container:** Start the Docker container on the EC2 instance.
-
-### Setting up Self-Hosted Runner on EC2:
-
-Configure a self-hosted runner on AWS EC2 to enable GitHub Actions to run on your instance. The runner will facilitate tasks like pulling the Docker image and running the container.
-
 ### Accessing the Application:
 
 After deployment, access the Node.js application on the EC2 instance by updating security group inbound rules to allow traffic on port 5000.
@@ -140,10 +144,3 @@ After deployment, access the Node.js application on the EC2 instance by updating
 
 Deploying a Node.js application on AWS EC2 using Docker and GitHub Actions streamlines the deployment process, making it more efficient and scalable. Docker's containerization benefits and GitHub Actions automation enhance the overall workflow.
 
-## To create a self hosted runner 
-Go to Github repo settings
-- On `Code and automation` tab expand `Actions` and click on `Runners`
-- Click on `new self hosted runner` button
-- On `Runner image` select `Linux`
-- On `Architecture` select `x64`
-- Copy the `Download` and `Configure` code step by step and run on the EC2 instance
