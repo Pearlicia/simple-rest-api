@@ -98,13 +98,57 @@ Click this [Install-docker](./journal/install-docker-on-ec2.md) link and follow 
 Configure a self-hosted runner on AWS EC2 to enable GitHub Actions to run on your instance. The runner will facilitate tasks like pulling the Docker image and running the container.
  
 Go to Github repo settings
-- On `Code and automation` tab expand `Actions` and click on `Runners`
+- Under `Code and automation` tab expand `Actions` and click on `Runners`
 - Click on `new self hosted runner` button
 - On `Runner image` select `Linux`
 - On `Architecture` select `x64`
 - Copy the `Download` and `Configure` code step by step and run on the EC2 instance
+- when configuring the runner on EC2 terminal it would promt you to enter `runner name` pls enter
+  a runner name **don't leave it as default** every other prompt is okay to be left as default
+in this guide I set the runner name as `aws-ec2` and the label also as `aws-ec2`
+
 
 ## Step 6: Write CICD Pipeline
+In your project root make a directory called `.github` inside the .github directory make 
+another directory called `workflows` then inside the workflows directory create
+a file you can name it whatever you want but the extension should be a `yml` or `yaml`
+Then copy and paste the workflow below
+
+Make the necessary changes to it like on building the image, you can change the image
+name to whichever name you prefer. And anywhere you see `pearlicia` change it to your 
+github username. On the `deploy` job change the `aws-ec2` to your runner name created in step 5
+
+```bash
+name: cicd-docker-ec2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+      - name: Build Docker image
+        run: docker build -t pearlicia/nodejs-app-cicd-docker-ec2 .
+
+  deploy:
+    needs: build
+    runs-on: [aws-ec2] # Change the aws-ec2 to your runner name you created in step 5
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull pearlicia/nodejs-app-cicd-docker-ec2:latest
+      - name: Remove old container (if exists)
+        run: docker rm -f nodejs-app-cicd-docker-ec2-container || true
+      - name: Run Docker container
+        run: docker run -d -p 5000:5000 --name nodejs-app-cicd-docker-ec2-container pearlicia/nodejs-app-cicd-docker-ec2
+
+
+```
 
 ### Workflow Overview:
 
@@ -121,7 +165,10 @@ Go to Github repo settings
 2. **Delete Old Container:** Remove any existing Docker container to avoid conflicts.
 3. **Run Docker Container:** Start the Docker container on the EC2 instance.
 
-If you get this error
+**When you're done commit your changes to github to trigger the workflow. If 
+both jobs complete then your application has been deployed to EC2
+
+If you get this error 
 ```bash
 permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock: Post "http://%2Fvar%2Frun%2Fdocker.sock/v1.24/images/create?fromImage=pearlicia%2Fnodejs-app-cicd-docker-ec2&tag=latest": dial unix /var/run/docker.sock: connect: permission denied
 Error: Process completed with exit code 1.
@@ -138,7 +185,10 @@ chmod 777 /var/run/docker.sock
 
 ### Accessing the Application:
 
-After deployment, access the Node.js application on the EC2 instance by updating security group inbound rules to allow traffic on port 5000.
+After deployment, access the Node.js application on the EC2 instance by updating security group inbound rules to allow traffic on port 5000. 
+
+Then copy your public IP to view it in a browser. If you're using this code here
+then the url will be http://yourip:5000/api/users
 
 ## Conclusion:
 
