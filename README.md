@@ -1,6 +1,6 @@
 # How to deploy a node express server to Amazon EC2 using docker and Github Actions
 
-In this guide, we will explore the realms of containerization and automated deployment. I will take a simple node.js application and guide you through the process of dockerizing it and deploying it to an Amazon EC2 instance using the power of GitHub Actions. Whether you are new to Docker or looking to streamline your deployment workflow, this guide has you covered.
+We will delve into the topics of automated deployment and containerisation in this guide. Using GitHub Actions, I will walk you through the process of dockerizing a basic node.js application and deploying it to an Amazon EC2 instance. This tutorial can help you optimise your deployment process or introduce you to Docker in a new way.
 
 ## What is Docker?
 
@@ -32,7 +32,7 @@ On a high level, Docker is a tool that allows you to package an application and 
 ## Step 1: Set Up Project
 Skip this step if you already have a project to deploy.
 
-If you don't have a project, go to this []() url and download this simple node express application and push to your github
+If you don't have a project, go to this [Source code](https://github.com/Pearlicia/simple-rest-api) url and download this simple node express application and push to your github
 
 ## Step 2: Create Dockerfile
 
