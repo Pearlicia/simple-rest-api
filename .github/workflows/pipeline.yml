@@ -1,0 +1,28 @@
+name: cicd-docker-ec2
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+      - name: Login to Docker Hub
+        run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }} 
+      - name: Build Docker image
+        run: docker build -t Charles-devops/nodejs-app-cicd-docker-ec2 .
+
+  deploy:
+    needs: build
+    runs-on: [aws-ec2] # Change the aws-ec2 to your runner name you created in step 5
+    steps:
+      - name: Pull image from Docker Hub
+        run: docker pull pearlicia/nodejs-app-cicd-docker-ec2:latest
+      - name: Remove old container (if exists)
+        run: docker rm -f nodejs-app-cicd-docker-ec2-container || true
+      - name: Run Docker container
+        run: docker run -d -p 5000:5000 --name nodejs-app-cicd-docker-ec2-container pearlicia/nodejs-app-cicd-docker-ec2
+
